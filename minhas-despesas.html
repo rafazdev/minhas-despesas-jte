@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Despesas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        header {
+            background-color: #0f172a;
+            color: #ffffff;
+            border-bottom: 3px solid #10b981;
+            padding: 1rem 1.5rem;
+        }
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        nav button {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            padding: 0.5rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        nav button:hover {
+            background-color: #1e293b;
+            color: #ffffff;
+        }
+        nav button.ativo {
+            background-color: #10b981;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .tela {
+            display: none;
+        }
+        .tela.ativa {
+            display: block;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+        .hero {
+            background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+            border: 1px solid #a7f3d0;
+        }
+        .hero h1 {
+            font-size: 1.9rem;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+        .hero p {
+            color: #475569;
+            margin-bottom: 1.25rem;
+        }
+        .btn {
+            padding: 0.65rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .btn-primario {
+            background-color: #10b981;
+            color: #ffffff;
+        }
+        .btn-secundario {
+            background-color: #ecfdf5;
+            color: #047857;
+            border: 1px solid #6ee7b7;
+        }
+        .btn-cancelar {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        .btn-excluir {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+        .stat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-card.destaque {
+            border-left: 4px solid #10b981;
+        }
+        .stat-num {
+            display: block;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .stat-label {
+            color: #64748b;
+            font-size: 0.92rem;
+        }
+        .form-group {
+            margin-bottom: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            padding: 0.65rem 0.85rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        .radio-group {
+            display: flex;
+            gap: 1.25rem;
+            padding-top: 0.25rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+        tfoot td {
+            background-color: #ecfdf5;
+            border-top: 2px solid #10b981;
+            color: #065f46;
+            font-weight: 700;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+        .aviso-vazio {
+            background-color: #fffbeb;
+            border: 1px solid #fcd34d;
+            text-align: center;
+            padding: 2.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="brand">💰 Minhas Despesas</div>
+            <nav>
+                <button class="ativo" onclick="abrirTela('inicio', this)">Início</button>
+                <button onclick="abrirTela('categorias', this)">Categorias</button>
+                <button onclick="abrirTela('nova-categoria', this)">Nova Categoria</button>
+                <button onclick="abrirTela('despesas', this)">Despesas</button>
+                <button onclick="abrirTela('nova-despesa', this)">Nova Despesa</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tela 1: Início -->
+        <section id="inicio" class="tela ativa">
+            <div class="card hero">
+                <h1>Para onde foi meu dinheiro?</h1>
+                <p>Cadastre categorias e registre cada gasto do mês.</p>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <button class="btn btn-secundario" onclick="abrirTelaPorNome('nova-categoria')">1º Criar categoria</button>
+                    <button class="btn btn-primario" onclick="abrirTelaPorNome('nova-despesa')">2º Registrar despesa</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-num" id="home-total-categorias">3</span>
+                    <span class="stat-label">categorias</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="home-total-despesas">4</span>
+                    <span class="stat-label">despesas</span>
+                </div>
+                <div class="stat-card destaque">
+                    <span class="stat-num" id="home-total-mes">R$ 327,40</span>
+                    <span class="stat-label">total do mês</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tela 2: Nova Categoria -->
+        <section id="nova-categoria" class="tela">
+            <div class="card" style="max-width: 600px;">
+                <h2 style="margin-bottom: 1rem;">Nova Categoria</h2>
+                <form onsubmit="salvarCategoria(event)">
+                    <div class="form-group">
+                        <label for="cat-nome">Nome</label>
+                        <input type="text" id="cat-nome" placeholder="Ex: Alimentação" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cat-desc">Descrição</label>
+                        <input type="text" id="cat-desc" placeholder="Ex: Mercado, RU, Lanches" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cat-limite">Limite de alerta (R$, opcional)</label>
+                        <input type="number" id="cat-limite" step="0.01" min="0" placeholder="Ex: 400.00">
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button type="submit" class="btn btn-primario">Salvar categoria</button>
+                        <button type="button" class="btn btn-cancelar" onclick="abrirTelaPorNome('categorias')">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Tela 3: Categorias -->
+        <section id="categorias" class="tela">
+            <div class="flex-between">
+                <h2 id="titulo-categorias">Categorias (3)</h2>
+                <button class="btn btn-primario" onclick="abrirTelaPorNome('nova-categoria')">+ Nova</button>
+            </div>
+            <div class="card" style="padding: 0; overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Limite</th>
+                            <th>Qtd. despesas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-categorias"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tela 4: Nova Despesa -->
+        <section id="nova-despesa" class="tela">
+            <div id="aviso-sem-categorias" class="card aviso-vazio" style="display: none;">
+                <h3 style="color: #b45309; margin-bottom: 0.5rem;">⚠️ Sem categorias cadastradas</h3>
+                <p style="margin-bottom: 1rem;">Cadastre uma categoria primeiro.</p>
+                <button class="btn btn-primario" onclick="abrirTelaPorNome('nova-categoria')">Ir para Nova Categoria</button>
+            </div>
+
+            <div id="box-form-despesa" class="card" style="max-width: 600px;">
+                <h2 style="margin-bottom: 1rem;">Nova Despesa</h2>
+                <form onsubmit="salvarDespesa(event)">
+                    <div class="form-group">
+                        <label for="desp-desc">Descrição</label>
+                        <input type="text" id="desp-desc" placeholder="Ex: Almoço RU" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="desp-valor">Valor (R$)</label>
+                        <input type="number" id="desp-valor" step="0.01" min="0.01" placeholder="Ex: 4.50" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="desp-data">Data</label>
+                        <input type="date" id="desp-data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="desp-categoria">Categoria</label>
+                        <select id="desp-categoria" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Forma de pagamento</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="formaPagamento" value="Pix" checked> Pix</label>
+                            <label><input type="radio" name="formaPagamento" value="Cartão"> Cartão</label>
+                            <label><input type="radio" name="formaPagamento" value="Dinheiro"> Dinheiro</label>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button type="submit" class="btn btn-primario">Salvar despesa</button>
+                        <button type="button" class="btn btn-cancelar" onclick="abrirTelaPorNome('despesas')">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Tela 5: Despesas -->
+        <section id="despesas" class="tela">
+            <div class="flex-between">
+                <h2 id="titulo-despesas">Despesas (4)</h2>
+                <button class="btn btn-primario" onclick="abrirTelaPorNome('nova-despesa')">+ Nova</button>
+            </div>
+            <div class="card" style="padding: 0; overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                            <th>Pagamento</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-despesas"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2">Total:</td>
+                            <td colspan="4" id="rodape-total">R$ 327,40</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let proximoCategoriaId = 4;
+        let proximaDespesaId = 5;
+
+        let categorias = [
+            { id: 1, nome: 'Alimentação', descricao: 'Mercado, RU, Lanches', limite: 400.00 },
+            { id: 2, nome: 'Transporte', descricao: 'Ônibus e aplicativo', limite: 150.00 },
+            { id: 3, nome: 'Lazer', descricao: 'Cinema, jogos, saídas', limite: null }
+        ];
+
+        let despesas = [
+            { id: 1, descricao: 'Almoço RU', valor: 4.50, data: '2026-11-10', formaPagamento: 'Pix', categoriaId: 1 },
+            { id: 2, descricao: 'Passe de ônibus', valor: 60.00, data: '2026-11-11', formaPagamento: 'Cartão', categoriaId: 2 },
+            { id: 3, descricao: 'Compras do mês', valor: 230.90, data: '2026-11-12', formaPagamento: 'Cartão', categoriaId: 1 },
+            { id: 4, descricao: 'Cinema', valor: 32.00, data: '2026-11-15', formaPagamento: 'Dinheiro', categoriaId: 3 }
+        ];
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function formatarData(dataIso) {
+            if (!dataIso) return '-';
+            const [ano, mes, dia] = dataIso.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function abrirTela(idTela, botaoClicado) {
+            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+            document.getElementById(idTela).classList.add('ativa');
+
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('ativo'));
+            if (botaoClicado) {
+                botaoClicado.classList.add('ativo');
+            }
+            atualizarTudo();
+        }
+
+        function abrirTelaPorNome(idTela) {
+            const botoes = Array.from(document.querySelectorAll('nav button'));
+            const mapa = {
+                'inicio': 0,
+                'categorias': 1,
+                'nova-categoria': 2,
+                'despesas': 3,
+                'nova-despesa': 4
+            };
+            abrirTela(idTela, botoes[mapa[idTela]]);
+        }
+
+        function salvarCategoria(event) {
+            event.preventDefault();
+            const nome = document.getElementById('cat-nome').value.trim();
+            const descricao = document.getElementById('cat-desc').value.trim();
+            const limiteInput = document.getElementById('cat-limite').value;
+            const limite = limiteInput ? parseFloat(limiteInput) : null;
+
+            categorias.push({
+                id: proximoCategoriaId++,
+                nome,
+                descricao,
+                limite
+            });
+
+            event.target.reset();
+            abrirTelaPorNome('categorias');
+        }
+
+        function salvarDespesa(event) {
+            event.preventDefault();
+            const descricao = document.getElementById('desp-desc').value.trim();
+            const valor = parseFloat(document.getElementById('desp-valor').value);
+            const data = document.getElementById('desp-data').value;
+            const categoriaId = parseInt(document.getElementById('desp-categoria').value);
+            const formaPagamento = document.querySelector('input[name="formaPagamento"]:checked').value;
+
+            despesas.push({
+                id: proximaDespesaId++,
+                descricao,
+                valor,
+                data,
+                formaPagamento,
+                categoriaId
+            });
+
+            event.target.reset();
+            abrirTelaPorNome('despesas');
+        }
+
+        function excluirDespesa(id) {
+            despesas = despesas.filter(d => d.id !== id);
+            atualizarTudo();
+        }
+
+        function atualizarTudo() {
+            const totalGeral = despesas.reduce((soma, d) => soma + d.valor, 0);
+
+            // Atualiza Home
+            document.getElementById('home-total-categorias').textContent = categorias.length;
+            document.getElementById('home-total-despesas').textContent = despesas.length;
+            document.getElementById('home-total-mes').textContent = formatarMoeda(totalGeral);
+
+            // Atualiza Tabela de Categorias
+            document.getElementById('titulo-categorias').textContent = `Categorias (${categorias.length})`;
+            const tbodyCat = document.getElementById('tabela-categorias');
+            tbodyCat.innerHTML = '';
+            categorias.forEach(c => {
+                const qtd = despesas.filter(d => d.categoriaId === c.id).length;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${c.nome}</strong></td>
+                    <td>${c.descricao}</td>
+                    <td>${c.limite ? formatarMoeda(c.limite) : '-'}</td>
+                    <td><span class="badge">${qtd}</span></td>
+                `;
+                tbodyCat.appendChild(tr);
+            });
+
+            // Atualiza Form de Despesa (Aviso sem categorias + Select dinâmico)
+            const aviso = document.getElementById('aviso-sem-categorias');
+            const boxForm = document.getElementById('box-form-despesa');
+            const selectCat = document.getElementById('desp-categoria');
+
+            if (categorias.length === 0) {
+                aviso.style.display = 'block';
+                boxForm.style.display = 'none';
+            } else {
+                aviso.style.display = 'none';
+                boxForm.style.display = 'block';
+                selectCat.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+                categorias.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.nome;
+                    selectCat.appendChild(opt);
+                });
+            }
+
+            // Atualiza Tabela de Despesas
+            document.getElementById('titulo-despesas').textContent = `Despesas (${despesas.length})`;
+            const tbodyDesp = document.getElementById('tabela-despesas');
+            tbodyDesp.innerHTML = '';
+            despesas.forEach(d => {
+                const cat = categorias.find(c => c.id === d.categoriaId);
+                const nomeCat = cat ? cat.nome : 'Sem categoria';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${d.descricao}</strong></td>
+                    <td><span class="badge">${nomeCat}</span></td>
+                    <td><strong>${formatarMoeda(d.valor)}</strong></td>
+                    <td>${formatarData(d.data)}</td>
+                    <td>${d.formaPagamento}</td>
+                    <td><button class="btn btn-excluir" onclick="excluirDespesa(${d.id})">Excluir</button></td>
+                `;
+                tbodyDesp.appendChild(tr);
+            });
+            document.getElementById('rodape-total').textContent = formatarMoeda(totalGeral);
+        }
+
+        atualizarTudo();
+    </script>
+</body>
+</html>
